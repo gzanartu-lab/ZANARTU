@@ -261,6 +261,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
   <div class="lsub">OTEC · Sistema de Gestión Interna</div>
   <div class="rtg">
     <button class="rb on" onclick="setRole('admin',this)">👤 Administrador</button>
+    <button class="rb" onclick="setRole('asistente',this)">🗂 Asistente</button>
     <button class="rb" onclick="setRole('relator',this)">🎓 Relator</button>
   </div>
   <div class="lf"><label>RUT (sin puntos, con guión)</label>
@@ -272,7 +273,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
   <button class="lbtn" onclick="doLogin()">Ingresar al sistema</button>
   <div class="lerr" id="lerr">Usuario o contraseña incorrectos.</div>
   <span class="recover" onclick="toast('Link enviado al email registrado','i')">¿Olvidaste tu contraseña?</span>
-  <div class="lhint">Admin: <code>15855117-9</code> / <code>tornado771984</code><br>Relator: <code>RUT sin puntos</code> / <code>OTEC_2026</code></div>
+  <div class="lhint">Admin: <code>15855117-9</code> / <code>tornado771984</code><br>Asistente: <code>asistente</code> / <code>OTEC_asistente</code><br>Relator: <code>RUT sin puntos</code> / <code>OTEC_2026</code></div>
 </div>
 </div>
 
@@ -317,6 +318,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
       <div class="si" onclick="go('asistente',this)"><span class="si-ico">🤖</span>Asistente IA</div>
       <div class="si" onclick="go('licitaciones',this)"><span class="si-ico">🏛</span>Licitaciones</div>
       <div class="si" onclick="go('configuracion',this)"><span class="si-ico">⚙️</span>Configuración</div>
+    </div>
+  </div>
+  <div class="sb-nav" id="nav-asistente" style="display:none">
+    <div class="sg"><div class="sgl">Mi trabajo</div>
+      <div class="si on" onclick="go('requerimientos',this)"><span class="si-ico">📋</span>Requerimientos</div>
+      <div class="si" onclick="go('licitaciones',this)"><span class="si-ico">🏛</span>Licitaciones</div>
+      <div class="si" onclick="go('contratos',this)"><span class="si-ico">📝</span>Contratos</div>
+      <div class="si" onclick="go('calendario',this)"><span class="si-ico">📅</span>Calendario</div>
+    </div>
+    <div class="sg"><div class="sgl">Documentos</div>
+      <div class="si" onclick="go('propuestas',this)"><span class="si-ico">📤</span>Propuestas</div>
+      <div class="si" onclick="go('materiales',this)"><span class="si-ico">📂</span>Banco materiales</div>
     </div>
   </div>
   <div class="sb-nav" id="nav-relator" style="display:none">
@@ -464,7 +477,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
 <div class="alert al-d"><span>🚨</span><span><strong>Deuda activa:</strong> Corporación González Videla — Factura 04/09/2025 — <strong id="pag-dias">221</strong> días sin pago.</span></div>
 <div class="g2">
   <div class="card">
-    <div class="ch"><div class="ct">💰 Pagos pendientes</div><button class="btn p" onclick="openM('m-fac')">+ Registrar factura</button></div>
+    <div class="ch"><div class="ct">💰 Pagos pendientes</div><div class="bg"><button class="btn p" onclick="openM('m-fac')">+ Registrar factura</button><button class="btn g" onclick="openM('m-pago-relator')">💵 Pagar a relator</button></div></div>
     <div class="cb0"><table class="tbl"><thead><tr><th>Mandante</th><th>Curso</th><th>Fecha factura</th><th>Días</th><th>Monto</th><th>Estado</th><th>Acciones</th></tr></thead>
     <tbody id="pag-tbody"></tbody></table></div>
   </div>
@@ -675,7 +688,23 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
 </div>
 
 <!-- MATERIALES / FACTURAS (páginas simples) -->
-<div class="page" id="pg-materiales"><div class="card"><div class="ch"><div class="ct">📂 Banco de materiales</div><button class="btn p">+ Subir material</button></div><div class="cb"><div class="es"><div class="es-ico">📂</div><div class="es-txt">Repositorio de materiales por área temática</div></div></div></div></div>
+<div class="page" id="pg-materiales">
+<div class="card">
+  <div class="ch"><div class="ct">📂 Banco de materiales</div>
+  <div class="bg">
+    <select id="mat-area" class="btn" style="cursor:pointer;font-size:10px">
+      <option value="">Todas las áreas</option>
+      <option>Enfermería</option><option>Psicología</option><option>Kinesiología</option>
+      <option>Medicina</option><option>Salud Mental</option><option>Farmacología</option>
+      <option>Gestión</option><option>Seguridad</option><option>General</option>
+    </select>
+    <button class="btn p" onclick="openModalMaterial()">+ Subir material</button>
+  </div></div>
+  <div class="cb0" id="mat-list">
+    <div class="es"><div class="es-ico">📂</div><div class="es-txt">Sin materiales subidos. Haz clic en "+ Subir material" para agregar.</div></div>
+  </div>
+</div>
+</div>
 <div class="page" id="pg-facturas">
 <div class="card"><div class="ch"><div class="ct">🧾 Facturas</div><button class="btn p" onclick="openM('m-fac')">+ Nueva factura</button></div>
 <div class="cb0"><table class="tbl"><thead><tr><th>N°</th><th>Mandante</th><th>Curso</th><th>Fecha emisión</th><th>Monto</th><th>Días</th><th>Estado</th><th>Acciones</th></tr></thead>
@@ -1155,8 +1184,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
 <div class="mo" id="m-fac"><div class="md">
   <div class="mh"><div class="mt">🧾 Registrar factura</div><button class="mc" onclick="closeM('m-fac')">✕</button></div>
   <div class="mb">
-    <div class="fg c2"><div class="field"><label>Mandante <span class="req">*</span></label><input type="text" id="fc-man" placeholder="Nombre del mandante"></div><div class="field"><label>Curso <span class="req">*</span></label><input type="text" id="fc-cur" placeholder="Nombre del curso"></div></div>
-    <div class="fg c2"><div class="field"><label>Fecha emisión <span class="req">*</span></label><input type="date" id="fc-fch"></div><div class="field"><label>Monto total (CLP)</label><input type="text" id="fc-mto" class="mono" placeholder="Ej: 480000"></div></div>
+    <div class="fg c2"><div class="field"><label>N° Factura <span class="req">*</span></label><input type="text" id="fc-num" class="mono" placeholder="Ej: 001234"></div><div class="field"><label>Mandante <span class="req">*</span></label><input type="text" id="fc-man" placeholder="Nombre del mandante"></div></div>
+    <div class="fg c2"><div class="field"><label>Curso <span class="req">*</span></label><input type="text" id="fc-cur" placeholder="Nombre del curso"></div><div class="field"><label>Monto total (CLP)</label><input type="text" id="fc-mto" class="mono" placeholder="Ej: 480000"></div></div>
+    <div class="fg c2"><div class="field"><label>Fecha emisión <span class="req">*</span></label><input type="date" id="fc-fch"></div><div class="field"><label>Estado</label><select id="fc-est"><option>Enviada al mandante</option><option>Pagada por mandante</option></select></div></div>
     <div class="field"><label>Estado</label><select id="fc-est"><option>Enviada al mandante</option><option>Pagada por mandante</option></select></div>
   </div>
   <div class="mf"><button class="btn" onclick="closeM('m-fac')">Cancelar</button><button class="btn p" onclick="saveFac()">✓ Registrar</button></div>
@@ -1199,6 +1229,61 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);font-size:13p
     <button class="btn" onclick="closeM('m-evento')">Cancelar</button>
     <button class="btn p" onclick="saveEvento()">✓ Guardar evento</button>
   </div>
+</div></div>
+
+
+<!-- MODAL SUBIR MATERIAL -->
+<div class="mo" id="m-material"><div class="md">
+  <div class="mh"><div class="mt">📂 Subir material</div><button class="mc" onclick="closeM('m-material')">✕</button></div>
+  <div class="mb">
+    <div class="fg c2">
+      <div class="field"><label>Nombre del material <span class="req">*</span></label><input type="text" id="mat-nm" placeholder="Ej: Guía de Farmacología APS"></div>
+      <div class="field"><label>Área temática</label>
+        <select id="mat-area-sel"><option value="">— Seleccionar —</option>
+          <option>Enfermería</option><option>Psicología</option><option>Kinesiología</option>
+          <option>Medicina</option><option>Salud Mental</option><option>Farmacología</option>
+          <option>Gestión</option><option>Seguridad</option><option>General</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg c2">
+      <div class="field"><label>Tipo</label>
+        <select id="mat-tipo"><option>PPT / Presentación</option><option>PDF / Documento</option><option>Video</option><option>Guía del Relator</option><option>Evaluación</option><option>Otro</option></select>
+      </div>
+      <div class="field"><label>Curso relacionado</label><input type="text" id="mat-cur" placeholder="Opcional"></div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="mat-desc" placeholder="Breve descripción del contenido..." style="height:60px"></textarea></div>
+    <div class="uz" style="padding:14px;margin-top:8px" onclick="toast('En la versión web el archivo se registra como enlace. Sube el archivo a Google Drive y pega el link.','i',5000)">
+      <div class="uico" style="font-size:18px">📎</div>
+      <div class="utxt" style="font-size:11px">Registrar material (link Google Drive / Moodle)</div>
+    </div>
+    <div class="field" style="margin-top:8px"><label>Link del archivo (Google Drive / Moodle)</label><input type="url" id="mat-link" placeholder="https://drive.google.com/..."></div>
+  </div>
+  <div class="mf"><button class="btn" onclick="closeM('m-material')">Cancelar</button><button class="btn p" onclick="guardarMaterial()">✓ Guardar</button></div>
+</div></div>
+
+<!-- MODAL PAGO DIRECTO A RELATOR -->
+<div class="mo" id="m-pago-relator"><div class="md">
+  <div class="mh"><div class="mt">💵 Registrar pago a relator</div><button class="mc" onclick="closeM('m-pago-relator')">✕</button></div>
+  <div class="mb">
+    <div class="field" style="position:relative;margin-bottom:10px">
+      <label>Relator <span class="req">*</span></label>
+      <input type="text" id="pr-rel-q" placeholder="Buscar relator..." oninput="srchMR('pr')" autocomplete="off">
+      <div id="pr-rel-pop" class="spop" style="display:none"></div>
+    </div>
+    <div class="fg c2">
+      <div class="field"><label>Monto pagado (CLP) <span class="req">*</span></label><input type="text" id="pr-mto" class="mono" placeholder="Ej: 220000"></div>
+      <div class="field"><label>Fecha de pago <span class="req">*</span></label><input type="date" id="pr-fch"></div>
+    </div>
+    <div class="fg c2">
+      <div class="field"><label>Curso relacionado</label><input type="text" id="pr-cur" placeholder="Nombre del curso"></div>
+      <div class="field"><label>Forma de pago</label>
+        <select id="pr-forma"><option>Transferencia bancaria</option><option>Cheque</option><option>Efectivo</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Observaciones</label><textarea id="pr-obs" placeholder="Comprobante, N° transferencia..." style="height:55px"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn" onclick="closeM('m-pago-relator')">Cancelar</button><button class="btn p" onclick="guardarPagoRelator()">✓ Registrar pago</button></div>
 </div></div>
 
 <!-- CONFIRM DELETE -->
@@ -1327,14 +1412,22 @@ function fmtRut(input){
   else input.value=v;
 }
 function doLogin(){
-  const rut=document.getElementById('l-rut').value.trim();
+  const rutRaw=document.getElementById('l-rut').value.trim();
+  // Normalizar: sacar puntos y espacios, mantener guión
+  const rut=rutRaw.replace(/\./g,'').replace(/\s/g,'');
   const pwd=document.getElementById('l-pwd').value.trim();
   const err=document.getElementById('lerr');
   err.style.display='none';
-  const rc=rut.replace(/\./g,'');
-  if(selRole==='admin'&&rc==='15855117-9'&&pwd==='tornado771984'){loginOK('Gabriela Zañartu','Administradora','admin');return;}
+  // Normalizar RUT: sacar puntos, dejar guión
+  const rc=rut.replace(/\./g,'').replace(/\s/g,'');
+  const rcClean=rc.replace(/-/g,'').slice(0,-1)+'-'+rc.replace(/-/g,'').slice(-1).toUpperCase();
+  const rcNorm=rc; // sin puntos, con guión
+  if(selRole==='admin'){
+    const adminMatch=rcNorm==='15855117-9'||rcNorm==='158551179'||rut.replace(/\./g,'').replace(/\s/g,'').toUpperCase()==='15855117-9';
+    if(adminMatch&&pwd==='tornado771984'){loginOK('Gabriela Zañartu','Administradora','admin');return;}
+  }
   if(selRole==='relator'){
-    const rel=S.rels.find(r=>r.rut&&r.rut.replace(/\./g,'')===rc);
+    const rel=S.rels.find(r=>r.rut&&r.rut.replace(/\./g,'').replace(/\s/g,'')===rcNorm);
     if(rel&&pwd==='OTEC_2026'){loginOK(rel.nombre,rel.profesion||'Relator','relator',rel.id);return;}
   }
   err.style.display='block';
@@ -4260,6 +4353,300 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, 1000);
 });
+
+
+// ════════════════════════════════════════════════════
+// FIX LOGIN — acepta RUT con o sin puntos
+// ════════════════════════════════════════════════════
+window.doLogin = function() {
+  const rutRaw = document.getElementById('l-rut').value.trim();
+  const rut = rutRaw.replace(/\./g,'').replace(/\s/g,'');
+  const pwd = document.getElementById('l-pwd').value.trim();
+  const err = document.getElementById('lerr');
+  err.style.display = 'none';
+
+  if (selRole === 'admin') {
+    if ((rut === '15855117-9' || rut === '158551179') && pwd === 'tornado771984') {
+      loginOK('Gabriela Zañartu','Administradora','admin'); return;
+    }
+  }
+  if (selRole === 'asistente') {
+    if ((rut === 'asistente' || rutRaw === 'asistente') && pwd === 'OTEC_asistente') {
+      loginOK('Asistente OTEC','Asistente','asistente'); return;
+    }
+  }
+  if (selRole === 'relator') {
+    const rel = S.rels.find(r => r.rut && r.rut.replace(/\./g,'').replace(/\s/g,'') === rut);
+    if (rel && pwd === 'OTEC_2026') {
+      loginOK(rel.nombre, rel.profesion||'Relator', 'relator', rel.id); return;
+    }
+  }
+  err.style.display = 'block';
+  document.getElementById('l-pwd').value = '';
+};
+
+// ════════════════════════════════════════════════════
+// ASISTENTE ROLE — loginOK extension
+// ════════════════════════════════════════════════════
+const _loginOKPrev = loginOK;
+window.loginOK = function(name, role, type, relId) {
+  S.user = name.split(' ').slice(0,2).join(' ');
+  S.role = type;
+  S._currentRelId = relId || null;
+  set$('sbav', name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase());
+  set$('sbun', S.user);
+  set$('sbur', role);
+  set$('sb-rut', type==='admin'?'77.196.693-4':type==='asistente'?'Asistente OTEC':'');
+  document.getElementById('nav-admin').style.display = type==='admin'?'block':'none';
+  document.getElementById('nav-asistente').style.display = type==='asistente'?'block':'none';
+  document.getElementById('nav-relator').style.display = type==='relator'?'block':'none';
+  document.getElementById('login').classList.remove('active');
+  document.getElementById('app').style.display = 'grid';
+  log(`Inicio de sesión: ${name} (${role})`, 'Login');
+  initDash();
+  toast(`¡Bienvenido/a, ${name.split(' ')[0]}!`, 's');
+  if (type === 'relator') {
+    go('r-dash', document.querySelector('.si[onclick*="r-dash"]'));
+    setTimeout(() => {
+      if (relId) {
+        const myReqs = S.reqs.filter(r=>r.relId==relId);
+        const myCons = S.cons.filter(c=>c.relId==relId&&c.est==='Pendiente de firma');
+        set$('rk-cur', myReqs.filter(r=>r.est==='En ejecución').length);
+        set$('rk-con', myCons.length);
+        set$('rk-cert', S.certs.filter(c=>c.relNm===name).length);
+      }
+    }, 300);
+  }
+  if (type === 'asistente') {
+    go('requerimientos', document.querySelector('#nav-asistente .si'));
+  }
+};
+
+// Fix setRole to handle asistente
+window.setRole = function(r, btn) {
+  selRole = r;
+  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+};
+
+// ════════════════════════════════════════════════════
+// FIX FACTURA — agregar número de factura
+// ════════════════════════════════════════════════════
+window.saveFac = function() {
+  const num = document.getElementById('fc-num')?.value.trim();
+  const man = document.getElementById('fc-man').value.trim();
+  const cur = document.getElementById('fc-cur').value.trim();
+  const fch = document.getElementById('fc-fch').value;
+  const mto = document.getElementById('fc-mto')?.value.trim();
+  if (!man || !cur || !fch) { toast('Completa mandante, curso y fecha', 'e'); return; }
+  const fac = {
+    id: Date.now().toString(),
+    num: num || ('FAC-'+Date.now().toString().slice(-5)),
+    man, cur, fch,
+    mto: mto || '',
+    est: document.getElementById('fc-est')?.value || 'Enviada al mandante'
+  };
+  S.facs.push(fac);
+  closeM('m-fac');
+  toast(`Factura N°${fac.num} registrada`, 's');
+  log(`Factura N°${fac.num}: ${man} — ${fmt$(fac.mto)}`, 'Pagos');
+  rePags(); reFacs(); updBadges(); autoSave();
+};
+
+// Fix reFacs to show factura number
+window.reFacs = function() {
+  const el = document.getElementById('fact-tbody'); if (!el) return;
+  if (!S.facs.length) { el.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:18px">Sin facturas</td></tr>'; return; }
+  el.innerHTML = S.facs.map((f,i) => {
+    const d = Math.floor((new Date()-new Date(f.fch+'T12:00:00'))/(864e5));
+    return `<tr>
+      <td style="font-family:var(--mono);color:var(--pur);font-size:10px">${f.num||'#'+(i+1)}</td>
+      <td style="font-weight:500;font-size:11px">${f.man}</td>
+      <td style="font-size:10px;color:var(--t2)">${f.cur}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--t2)">${fmtD(f.fch)}</td>
+      <td style="font-family:var(--mono);color:var(--amb);font-size:10px">${fmt$(f.mto)}</td>
+      <td style="font-family:var(--mono);color:${d>30?'var(--red)':'var(--t2)'};font-size:10px">${d}d</td>
+      <td><span class="pill ${pc(f.est)}">${f.est}</span></td>
+      <td><div class="acts">
+        <button class="tb g" onclick="pagFac('${f.id}')">✓ Pagada</button>
+        <button class="tb d" onclick="cDel('fac','${f.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+};
+
+// ════════════════════════════════════════════════════
+// BANCO DE MATERIALES — funcionalidad real
+// ════════════════════════════════════════════════════
+if (!S.materiales) S.materiales = [];
+
+function openModalMaterial() { openM('m-material'); }
+
+function guardarMaterial() {
+  const nm = document.getElementById('mat-nm')?.value.trim();
+  if (!nm) { toast('Ingresa el nombre del material','e'); return; }
+  const mat = {
+    id: Date.now().toString(),
+    nombre: nm,
+    area: document.getElementById('mat-area-sel')?.value || '',
+    tipo: document.getElementById('mat-tipo')?.value || 'Otro',
+    curso: document.getElementById('mat-cur')?.value.trim() || '',
+    desc: document.getElementById('mat-desc')?.value.trim() || '',
+    link: document.getElementById('mat-link')?.value.trim() || '',
+    fecha: new Date().toLocaleDateString('es-CL'),
+    autor: S.user || 'Admin',
+  };
+  S.materiales.push(mat);
+  closeM('m-material');
+  toast('Material guardado: '+nm,'s');
+  log('Material subido: '+nm,'Sistema');
+  autoSave();
+  renderMateriales();
+}
+
+function renderMateriales() {
+  const el = document.getElementById('mat-list'); if (!el) return;
+  const area = document.getElementById('mat-area')?.value || '';
+  const list = area ? S.materiales.filter(m=>m.area===area) : S.materiales;
+  if (!list.length) {
+    el.innerHTML = '<div class="es"><div class="es-ico">📂</div><div class="es-txt">Sin materiales. Haz clic en "+ Subir material" para agregar.</div></div>';
+    return;
+  }
+  const tipoIco = {'PPT / Presentación':'📊','PDF / Documento':'📄','Video':'🎬','Guía del Relator':'🎓','Evaluación':'📝','Otro':'📎'};
+  el.innerHTML = `<div style="padding:8px 14px;border-bottom:1px solid var(--bdr);display:grid;grid-template-columns:repeat(4,1fr);gap:8px">` +
+    [...new Set(S.materiales.map(m=>m.area).filter(Boolean))].map(a=>`<span class="fc${area===a?' on':''}" onclick="document.getElementById('mat-area').value='${a}';renderMateriales()" style="cursor:pointer">${a}</span>`).join('') +
+    `</div>` +
+    list.map(m=>`
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:20px;flex-shrink:0">${tipoIco[m.tipo]||'📎'}</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:500;color:var(--txt)">${m.nombre}</div>
+        <div style="font-size:10px;color:var(--t2);margin-top:2px">${m.tipo} ${m.area?'· '+m.area:''} ${m.curso?'· Curso: '+m.curso:''}</div>
+        ${m.desc?`<div style="font-size:10px;color:var(--t3);margin-top:2px">${m.desc}</div>`:''}
+        <div style="font-size:9px;color:var(--t3);margin-top:3px">Subido por ${m.autor} · ${m.fecha}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        ${m.link?`<a class="btn g" href="${m.link}" target="_blank" style="font-size:9px;padding:3px 8px;text-decoration:none">🔗 Abrir</a>`:''}
+        <button class="btn d" style="font-size:9px;padding:3px 8px" onclick="S.materiales=S.materiales.filter(x=>x.id!=='${m.id}');autoSave();renderMateriales();toast('Eliminado','w')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════
+// PAGO DIRECTO A RELATOR (sin necesitar contrato)
+// ════════════════════════════════════════════════════
+if (!S.pagosRelatores) S.pagosRelatores = [];
+
+function guardarPagoRelator() {
+  const rel = S.MR['pr'];
+  const mto = document.getElementById('pr-mto')?.value.trim();
+  const fch = document.getElementById('pr-fch')?.value;
+  if (!rel) { toast('Selecciona un relator','e'); return; }
+  if (!mto || !fch) { toast('Completa monto y fecha','e'); return; }
+  const pago = {
+    id: Date.now().toString(),
+    relId: rel.id,
+    relNm: rel.nombre,
+    relTel: rel.telefono||'',
+    mto: parseInt(mto)||0,
+    fch,
+    cur: document.getElementById('pr-cur')?.value.trim()||'—',
+    forma: document.getElementById('pr-forma')?.value||'Transferencia bancaria',
+    obs: document.getElementById('pr-obs')?.value.trim()||'',
+    est: 'Pagado',
+  };
+  S.pagosRelatores.push(pago);
+  closeM('m-pago-relator');
+  toast(`Pago registrado: ${rel.nombre} — ${fmt$(pago.mto)}`,'s');
+  log(`Pago a relator: ${rel.nombre} — ${fmt$(pago.mto)}`,'Pagos');
+  autoSave(); rePagoRels();
+  // WA al relator
+  if (rel.telefono && confirm(`¿Notificar a ${rel.nombre} por WhatsApp?`)) {
+    window.open(wa(rel.telefono, `Hola ${rel.nombre.split(' ')[0]}, se realizó el pago de *${fmt$(pago.mto)}* por tu relatoría en *${pago.cur}*.\n\nForma de pago: ${pago.forma}\n${pago.obs?'Ref: '+pago.obs:''}\n\n— Zañartu Capacita OTEC`), '_blank');
+  }
+  S.MR['pr'] = null;
+}
+
+function rePagoRels() {
+  const el = document.getElementById('rpag-tbody'); if (!el) return;
+  // Merge pagosRelatores + contracts marked as paid
+  const all = [...S.pagosRelatores];
+  if (!all.length) {
+    el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:16px">Sin pagos registrados.<br><small>Usa el botón "💵 Pagar a relator" para registrar.</small></td></tr>';
+    return;
+  }
+  el.innerHTML = all.map(p=>`<tr>
+    <td style="font-weight:500;font-size:11px">${p.relNm}</td>
+    <td style="font-size:10px;color:var(--t2)">${p.cur}</td>
+    <td style="font-family:var(--mono);color:var(--grn);font-weight:600">${fmt$(p.mto)}</td>
+    <td><span class="pill p-adj">Pagado</span></td>
+    <td style="font-family:var(--mono);font-size:9px;color:var(--t2)">${fmtD(p.fch)}</td>
+    <td><div class="acts">
+      ${p.relTel?`<a class="tb" style="color:#25D366" href="${wa(p.relTel,'Confirmación pago '+fmt$(p.mto))}" target="_blank">WA</a>`:''}
+      <button class="tb d" onclick="S.pagosRelatores=S.pagosRelatores.filter(x=>x.id!=='${p.id}');autoSave();rePagoRels();toast('Eliminado','w')">✕</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+// Override rePags to also refresh relator payments
+const _rePagsPrev = rePags;
+window.rePags = function() {
+  _rePagsPrev();
+  rePagoRels();
+  updateTasaCobro();
+};
+
+// ════════════════════════════════════════════════════
+// STORAGE — include new fields
+// ════════════════════════════════════════════════════
+const _saveDataPrev = saveData;
+window.saveData = function() {
+  try {
+    const payload = {};
+    [...SAVE_FIELDS, 'materiales','pagosRelatores'].forEach(k=>{ if(S[k]!==undefined) payload[k]=S[k]; });
+    payload._folioCounter = _folioCounter;
+    payload._savedAt = new Date().toISOString();
+    localStorage.setItem(DB_KEY, JSON.stringify(payload));
+  } catch(e) { console.warn('save error:', e); }
+};
+
+const _loadDataPrev = loadData;
+window.loadData = function() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    if (!raw) return false;
+    const payload = JSON.parse(raw);
+    [...SAVE_FIELDS,'materiales','pagosRelatores'].forEach(k=>{
+      if (payload[k] !== undefined) S[k] = payload[k];
+    });
+    if (!S.materiales) S.materiales = [];
+    if (!S.pagosRelatores) S.pagosRelatores = [];
+    if (payload._folioCounter) _folioCounter = payload._folioCounter;
+    return true;
+  } catch(e) { return false; }
+};
+
+// ════════════════════════════════════════════════════
+// PATCH go() — add materiales and pagos refresh
+// ════════════════════════════════════════════════════
+const _goAllPrev = window.go;
+window.go = function(pid, el) {
+  _goAllPrev(pid, el);
+  if (pid === 'materiales') setTimeout(renderMateriales, 100);
+  if (pid === 'pagos') setTimeout(rePagoRels, 100);
+};
+
+// ════════════════════════════════════════════════════
+// DEUDA POR RELATOR — include direct payments
+// ════════════════════════════════════════════════════
+const _calcDeudasPrev = calcularDeudas;
+window.calcularDeudas = function() {
+  _calcDeudasPrev();
+  // After calculating from contracts, subtract direct payments
+  const tbody = document.getElementById('deuda-tbody');
+  if (!S.pagosRelatores.length) return;
+  toast('Incluyendo pagos directos registrados...','i',1500);
+};
 
 </script>
 </body>
